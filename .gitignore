@@ -4,6 +4,8 @@ build/
 out/
 target/
 *.iml
+news.mv.db
+news.trace.db
 
 # Eclipse
 .classpath
