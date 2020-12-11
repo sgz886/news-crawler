@@ -17,21 +17,17 @@ import java.sql.SQLException;
 import java.util.stream.Collectors;
 
 public class Crawler {
-    private static int processedNumberSession = 0;
-
-    private CrawlerDao dao = new JdbcCrawlerDao("jdbc:h2:file:" + System.getProperty("user.dir") + "/news", "root",
-            "root");
-
-    @SuppressFBWarnings("DMI_CONSTANT_DB_PASSWORD")
-    public Crawler() {
-    }
+    private int processedNumberSession = 0;
+    private CrawlerDao dao = new MyBatisCrawlerDao();
+    // private CrawlerDao dao = new JdbcCrawlerDao("jdbc:h2:file:" + System.getProperty("user.dir") + "/news", "root",
+    //         "root");
 
     public void run() throws SQLException {
 
         String link;
         // 从待处理数据库中加载下一个链接,如果存在则删除
-        while ((link = dao.getNextLinkThenDelete()) != null && processedNumberSession <= 300) {
-            if (dao.isInDB("select LINK from LINKS_ALREADY_PROCESSED where LINK= ?", link)) {
+        while ((link = dao.getNextLinkThenDelete()) != null && processedNumberSession <= 5000) {
+            if (dao.isInFinishedTable(link)) {
                 continue;
             }
 
@@ -42,7 +38,7 @@ public class Crawler {
             parseUrlsFromPageAndStoreToDo(doc);
             processNews(doc, link);
 
-            dao.insertOrDeleteFromDB("insert into LINKS_ALREADY_PROCESSED  (LINK) VALUES ( ? )", link);
+            dao.insertToFinishedTable(link);
         }
 
         System.out.println("待处理 = 暂没做"); // TODO: 2020/12/9
@@ -58,22 +54,19 @@ public class Crawler {
         for (Element tag : doc.select("a")) {
             String href = tag.attr("href").trim();
             if (isInterestingLink(href)) {
-                if (dao.isInDB("select LINK from LINKS_ALREADY_PROCESSED where LINK= ?", href) ||
-                            dao.isInDB("select LINK from LINKS_TO_BE_PROCESSED where LINK= ?", href)) {
+                if (dao.isInFinishedTable(href) || dao.isInTodoTable(href)) {
                     continue;
                 }
                 if (href.startsWith("//")) {
                     href = "https:" + href;
                 }
-                dao.insertOrDeleteFromDB("insert into LINKS_TO_BE_PROCESSED (LINK) values ( ? )", href);
+                dao.insertToTodoTable(href);
                 System.out.println("    1.添加:" + href + "进入待处理");
             }
         }
     }
 
-
     private static Document httpGetandParseHtml(String link) {
-        // 这是我们感兴趣的内容(sina.cn)
         CloseableHttpClient httpclient = HttpClients.createDefault();
         HttpGet httpGet;
         try {
@@ -86,7 +79,6 @@ public class Crawler {
                                                 + "like Gecko) Chrome/86.0.4240.198 Safari/537.36");
         System.out.println("当前页面 " + link);
         try (CloseableHttpResponse response1 = httpclient.execute(httpGet)) {
-            // System.out.println(response1.getStatusLine());
             HttpEntity entity1 = response1.getEntity();
             String html = EntityUtils.toString(entity1);
             return Jsoup.parse(html);

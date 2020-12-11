@@ -6,7 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class JdbcCrawlerDao implements CrawlerDao {
+public class JdbcCrawlerDao  {
     private final Connection connection;
 
     public JdbcCrawlerDao(String jdbcUrl, String userName, String password) {
@@ -17,7 +17,7 @@ public class JdbcCrawlerDao implements CrawlerDao {
         }
     }
 
-    public String getNextLinkFromDB(String sql) throws SQLException {
+    private String getNextLinkFromDB(String sql) throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(sql);
              ResultSet resultSet = statement.executeQuery()) {
             if (resultSet.next()) {
@@ -54,7 +54,7 @@ public class JdbcCrawlerDao implements CrawlerDao {
         }
     }
 
-    public boolean isInDB(String sql, String link) throws SQLException {
+    public boolean isInTodoTable(String sql, String link) throws SQLException {
         ResultSet resultSet = null;
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, link);
