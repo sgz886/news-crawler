@@ -64,6 +64,12 @@
             <artifactId>jsoup</artifactId>
             <version>1.13.1</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.22</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
         <dependency>
             <groupId>com.h2database</groupId>
@@ -160,7 +166,8 @@
                 <artifactId>flyway-maven-plugin</artifactId>
                 <version>7.3.1</version>
                 <configuration>
-                    <url>jdbc:h2:file:${basedir}/news</url>
+                    <!--<url>jdbc:h2:file:${basedir}/news</url>-->
+                    <url>jdbc:mysql://localhost:3306/news</url>
                     <user>root</user>
                     <password>root</password>
                 </configuration>
