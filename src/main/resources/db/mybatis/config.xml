@@ -8,9 +8,7 @@
             <transactionManager type="JDBC"/>
             <dataSource type="POOLED">
                 <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
-                <property name="url" value="jdbc:mysql://localhost:3306/news"/>
-            <!--<property name="url" value="jdbc:h2:file:${basedir}/news"/>-->
-<!--                <property name="url" value="jdbc:h2:file:C:\Users\su\IdeaProjects\xdml\30 news-crawler\news-crawler/news"/>-->
+                <property name="url" value="jdbc:mysql://localhost:3300/news"/> <!--3300是windows上的MySQL端口-->
                 <property name="username" value="root"/>
                 <property name="password" value="root"/>
             </dataSource>
