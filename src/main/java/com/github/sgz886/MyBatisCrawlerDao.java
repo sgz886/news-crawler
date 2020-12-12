@@ -7,7 +7,6 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,7 +24,7 @@ public class MyBatisCrawlerDao implements CrawlerDao {
     }
 
     @Override
-    public String getNextLinkThenDelete() throws SQLException {
+    public synchronized String getNextLinkThenDelete() {
         try (SqlSession session = sqlSessionFactory.openSession(true)) {
             String url = session.selectOne("com.github.sgz886.MyMapper.selectNextAvailableLink");
             if (url != null) {
@@ -36,7 +35,7 @@ public class MyBatisCrawlerDao implements CrawlerDao {
     }
 
     @Override
-    public boolean isInFinishedTable(String link) throws SQLException {
+    public boolean isInFinishedTable(String link) {
         try (SqlSession session = sqlSessionFactory.openSession()) {
             int count = session.selectOne("com.github.sgz886.MyMapper.checkLinkinFinishedTable", link);
             return count != 0;
@@ -64,7 +63,7 @@ public class MyBatisCrawlerDao implements CrawlerDao {
     }
 
     @Override
-    public boolean isInTodoTable(String link) throws SQLException {
+    public boolean isInTodoTable(String link) {
         try (SqlSession session = sqlSessionFactory.openSession()) {
             int count = session.selectOne("com.github.sgz886.MyMapper.checkLinkinTodoTable", link);
             return count != 0;

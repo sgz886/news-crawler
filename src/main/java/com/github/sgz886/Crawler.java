@@ -15,37 +15,42 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.stream.Collectors;
 
-public class Crawler {
+public class Crawler extends Thread {
     private int processedNumberSession = 0;
-    private CrawlerDao dao = new MyBatisCrawlerDao();
-    // private CrawlerDao dao = new JdbcCrawlerDao("jdbc:h2:file:" + System.getProperty("user.dir") + "/news", "root",
-    //         "root");
+    private final CrawlerDao dao;
 
-    public void run() throws SQLException {
+    public Crawler(CrawlerDao dao, String name) {
+        super(name);
+        this.dao = dao;
+    }
+
+    @Override
+    public void run() {
 
         String link;
         // 从待处理数据库中加载下一个链接,如果存在则删除
-        while ((link = dao.getNextLinkThenDelete()) != null && processedNumberSession <= 5000) {
-            if (dao.isInFinishedTable(link)) {
-                continue;
-            }
+        try {
+            while ((link = dao.getNextLinkThenDelete()) != null && processedNumberSession <= 5000) {
+                if (dao.isInFinishedTable(link)) {
+                    continue;
+                }
 
-            Document doc = httpGetandParseHtml(link);
-            if (doc == null) {
-                continue;
-            }
-            parseUrlsFromPageAndStoreToDo(doc);
-            processNews(doc, link);
+                Document doc = httpGetandParseHtml(link);
+                if (doc == null) {
+                    continue;
+                }
+                parseUrlsFromPageAndStoreToDo(doc);
+                processNews(doc, link);
 
-            dao.insertToFinishedTable(link);
+                dao.insertToFinishedTable(link);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         System.out.println("待处理 = 暂没做"); // TODO: 2020/12/9
         System.out.println("本次已处理 = " + processedNumberSession);
-    }
-
-    public static void main(String[] args) throws SQLException {
-        new Crawler().run();
     }
 
     // 1.将所有发现的 新链接 存到待处理数据库
