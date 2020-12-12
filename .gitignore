@@ -6,6 +6,8 @@ target/
 *.iml
 news.mv.db
 news.trace.db
+/mysqlcmdfolder/
+mysql-data/
 
 # Eclipse
 .classpath
