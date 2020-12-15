@@ -10,7 +10,7 @@ public interface CrawlerDao {
 
     boolean isInFinishedTable(String link) throws SQLException;
 
-    void insertNewsIntoDB(String URL, String title, String content);
+    void insertNewsIntoDB(News news);
 
     void insertToTodoTable(String href);
 
