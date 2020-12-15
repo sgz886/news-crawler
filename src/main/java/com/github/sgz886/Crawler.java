@@ -16,12 +16,14 @@ import java.sql.SQLException;
 import java.util.stream.Collectors;
 
 public class Crawler extends Thread {
-    private int processedNumberSession = 0;
     private final CrawlerDao dao;
+    private final int targetNumber;
+    private int processedNumberSession = 0;
 
-    public Crawler(CrawlerDao dao, String name) {
+    public Crawler(CrawlerDao dao, int target_number, String name) {
         super(name);
         this.dao = dao;
+        this.targetNumber = target_number;
     }
 
     @Override
@@ -30,7 +32,7 @@ public class Crawler extends Thread {
         String link;
         // 从待处理数据库中加载下一个链接,如果存在则删除
         try {
-            while ((link = dao.getNextLinkThenDelete()) != null && processedNumberSession <= 5000) {
+            while ((link = dao.getNextLinkThenDelete()) != null && processedNumberSession <= targetNumber) {
                 if (dao.isInFinishedTable(link)) {
                     continue;
                 }
@@ -81,7 +83,7 @@ public class Crawler extends Thread {
         }
         httpGet.addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, "
                                                 + "like Gecko) Chrome/86.0.4240.198 Safari/537.36");
-        System.out.println("当前页面 " + link);
+        System.out.printf("当前页面by %s %s%n", Thread.currentThread().getName(), link);
         try (CloseableHttpResponse response1 = httpclient.execute(httpGet)) {
             HttpEntity entity1 = response1.getEntity();
             String html = EntityUtils.toString(entity1);
@@ -132,7 +134,7 @@ public class Crawler extends Thread {
             try {
                 String title = articleTag.child(0).text();
                 String content = doc.select("p").stream().map(Element::text).collect(Collectors.joining("\n"));
-                dao.insertNewsIntoDB(link, title, content);
+                dao.insertNewsIntoDB(new News(link, title, content));
                 processedNumberSession++;
             } catch (Exception e) {
                 e.printStackTrace();

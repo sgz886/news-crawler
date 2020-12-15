@@ -103,6 +103,18 @@
             <version>5.7.0</version>
             <scope>test</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils -->
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>1.9.4</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.elasticsearch.client/elasticsearch-rest-high-level-client -->
+        <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>elasticsearch-rest-high-level-client</artifactId>
+            <version>7.10.1</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -167,7 +179,7 @@
                 <version>7.3.1</version>
                 <configuration>
                     <!--<url>jdbc:h2:file:${basedir}/news</url>-->
-                    <url>jdbc:mysql://localhost:3300/news</url><!--3300是windows上的MySQL端口-->
+                    <url>jdbc:mysql://localhost:3306/news?characterEncoding=utf-8</url><!-- 3300是windows上的MySQL端口-->
                     <user>root</user>
                     <password>root</password>
                 </configuration>

@@ -4,40 +4,40 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.github.sgz886.MyMapper">
     <select id="selectNextAvailableLink" resultType="String">
-        SELECT LINK
-        FROM LINKS_TO_BE_PROCESSED
+        SELECT link
+        FROM news.links_to_be_processed
         limit 1
     </select>
 
     <delete id="deleteLink" parameterType="String">
         delete
-        from LINKS_TO_BE_PROCESSED
-        where LINK = #{url}
+        from news.links_to_be_processed
+        where link = #{url}
     </delete>
 
     <select id="checkLinkinFinishedTable" parameterType="String" resultType="int">
-        select count(LINK)
-        from LINKS_ALREADY_PROCESSED
-        where LINK = #{link}
+        select count(link)
+        from news.links_already_processed
+        where link = #{link}
     </select>
 
     <select id="checkLinkinTodoTable" parameterType="String" resultType="int">
         select count(link)
-        from LINKS_TO_BE_PROCESSED
+        from news.links_to_be_processed
         where link = #{link}
     </select>
     <insert id="insertLink" parameterType="String">
         insert into
         <choose>
-            <when test="tableName=='LINKS_TO_BE_PROCESSED'">LINKS_TO_BE_PROCESSED</when>
-            <otherwise>LINKS_ALREADY_PROCESSED</otherwise>
+            <when test="tableName=='news.links_to_be_processed'">news.links_to_be_processed</when>
+            <otherwise>news.links_already_processed</otherwise>
         </choose>
         (link) values (#{link})
     </insert>
 
     <insert id="insertNews" parameterType="com.github.sgz886.News">
-        insert into news (URL, title, content, created_at, modified_at)
-        values (#{url}, #{title}, #{content}, now(), now())
+        insert into news.news (url, title, content, created_at, modified_at)
+        values (#{url}, #{title}, #{content}, #{createdAt}, #{modifiedAt})
     </insert>
 
 </mapper>

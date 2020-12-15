@@ -6,14 +6,15 @@ create table news
     url         varchar(1000),
     created_at  timestamp default now(),
     modified_at timestamp default now()
-);
+)
+default CHARACTER SET =utf8mb4;
 
-create table LINKS_TO_BE_PROCESSED
+create table links_to_be_processed
 (
     link varchar(1000)
 );
 
-create table LINKS_ALREADY_PROCESSED
+create table links_already_processed
 (
     link varchar(1000)
 );

@@ -1,2 +1,2 @@
-insert into LINKS_TO_BE_PROCESSED(LINK)
+insert into news.links_to_be_processed(link)
 values ('https://sina.cn');

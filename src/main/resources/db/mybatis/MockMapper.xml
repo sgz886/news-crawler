@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.sgz886.MockMapper">
+    <insert id="insertNews" parameterType="com.github.sgz886.News">
+        insert into news.news (url, title, content, created_at, modified_at)
+        values (#{url}, #{title}, #{content}, #{createdAt}, #{modifiedAt})
+    </insert>
+    <select id="selectNews" resultType="com.github.sgz886.News">
+        select id, url, title, content, created_at, modified_at
+        from news.news
+        <choose>
+            <when test="number==null"></when>
+            <otherwise>limit #{number}</otherwise>
+        </choose>
+    </select>
+
+</mapper>
